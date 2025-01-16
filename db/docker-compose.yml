@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # Service pour MySQL
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root  # Mot de passe root pour MySQL
+      MYSQL_DATABASE: saes5    # Base de données par défaut
+    volumes:
+      - mysql_data:/var/lib/mysql    # Volume persistant pour les données MySQL
+    networks:
+      - app-network
+    ports:
+      - "3306:3306"  # Exposer le port MySQL sur le port 3306 local
+
+  # Service pour phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: mysql  # Nom du service MySQL
+      PMA_PORT: 3306   # Port sur lequel MySQL écoute
+    ports:
+      - "8080:80"  # Accéder à phpMyAdmin via localhost:8080
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+# Définir un réseau pour l'application
+networks:
+  app-network:
+    driver: bridge
+
+# Volume pour persister les données MySQL
+volumes:
+  mysql_data:

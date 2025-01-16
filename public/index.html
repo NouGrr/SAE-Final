@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte avec itinéraire</title>
+    <!-- Import Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            height: 100vh;
+        }
+        #menu {
+            width: 200px;
+            background-color: #000000;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        #menu a {
+            display: block;
+            text-decoration: none;
+            color: #fffcfc;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        #menu a:hover {
+            background-color: #000000;
+        }
+        #map-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        #map {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="menu">
+        <a href="home.html">Home</a>
+        <a href="index.html">Carte</a>
+        <a href="calendrier.html">Calendrier</a>
+        <a href="#connexion">Connexion</a>
+        <a href="payment.html">Paiement</a>
+    </div>
+
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+
+    <!-- Import Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <!-- Import Leaflet Routing Machine -->
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <!-- Import Leaflet Control Geocoder -->
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+    <script>
+        // Initialisation de la carte
+        const map = L.map('map').setView([48.8566, 2.3522], 13); // Centré sur Paris par défaut
+
+        // Ajout d'une couche de tuiles OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Fonction pour centrer la carte sur la position actuelle de l'utilisateur
+        function onLocationFound(e) {
+            map.setView(e.latlng, 13);
+        }
+
+        function onLocationError(e) {
+            alert(e.message);
+        }
+
+        map.on('locationfound', onLocationFound);
+        map.on('locationerror', onLocationError);
+
+        map.locate({ setView: true, maxZoom: 16 });
+
+        // Initialisation du contrôle de routage
+        const control = L.Routing.control({
+            waypoints: [],
+            routeWhileDragging: true,
+            geocoder: L.Control.Geocoder.nominatim(),
+            lineOptions: {
+                styles: [{ color: 'blue', opacity: 1, weight: 5 }]
+            }
+        }).addTo(map);
+
+        // Ajouter des points de passage en cliquant sur la carte
+        map.on('click', function(e) {
+            const waypoint = L.latLng(e.latlng.lat, e.latlng.lng);
+            control.spliceWaypoints(control.getWaypoints().length, 0, waypoint);
+        });
+
+        // Ajouter un gestionnaire d'événements pour supprimer les points de passage
+        control.on('waypointschanged', function(e) {
+            e.waypoints.forEach(function(waypoint, index) {
+                if (waypoint.latLng) {
+                    const marker = waypoint.marker;
+                    marker.on('click', function() {
+                        control.spliceWaypoints(index, 1);
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

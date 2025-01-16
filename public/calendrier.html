@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendrier</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+        }
+        #menu {
+            width: 200px;
+            background-color: #000000;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        #menu a {
+            display: block;
+            text-decoration: none;
+            color: #fffcfc;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        #menu a:hover {
+            background-color: #000000;
+        }
+        #content {
+            flex: 1;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .error-message {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="menu">
+        <a href="home.html">Home</a>
+        <a href="index.html">Carte</a>
+        <a href="calendrier.html">Calendrier</a>
+        <a href="#connexion">Connexion</a>
+        <a href="payment.html">Paiement</a>
+    </div>
+
+    <div id="content">
+        <h1>Calendrier</h1>
+        <form id="event-form">
+            <input type="text" id="title" placeholder="Titre" required>
+            <input type="date" id="date" required>
+            <input type="time" id="time" required>
+            <button type="submit">Ajouter</button>
+        </form>
+        <div id="error-message" class="error-message"></div>
+        <table id="events-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Titre</th>
+                    <th>Date</th>
+                    <th>Heure</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Les événements seront ajoutés ici -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.getElementById('event-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const title = document.getElementById('title').value;
+            const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
+
+            fetch('/events', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ title, date, time })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur lors de l\'ajout de l\'événement');
+                }
+                return response.text();
+            })
+            .then(data => {
+                alert(data);
+                loadEvents();
+                document.getElementById('error-message').textContent = '';
+            })
+            .catch(error => {
+                document.getElementById('error-message').textContent = error.message;
+            });
+        });
+
+        function loadEvents() {
+            fetch('/events')
+                .then(response => response.json())
+                .then(events => {
+                    const tbody = document.getElementById('events-table').querySelector('tbody');
+                    tbody.innerHTML = '';
+                    events.forEach(event => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${event.id}</td>
+                            <td>${event.title}</td>
+                            <td>${event.date}</td>
+                            <td>${event.time}</td>
+                            <td><button onclick="deleteEvent(${event.id})">Supprimer</button></td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(error => {
+                    console.error('Erreur lors du chargement des événements:', error);
+                });
+        }
+
+        function deleteEvent(id) {
+            fetch(`/events/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur lors de la suppression de l\'événement');
+                }
+                return response.text();
+            })
+            .then(data => {
+                alert(data);
+                loadEvents();
+            })
+            .catch(error => {
+                document.getElementById('error-message').textContent = error.message;
+            });
+        }
+
+        loadEvents();
+    </script>
+</body>
+</html>
