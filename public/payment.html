@@ -106,17 +106,17 @@
             align-items: center;
         }
         .subscription-container button {
-            width: 150px;
-            height: 300px;
+            width: 250px; /* Plus large rectangle */
+            height: 500px; /* Moins haut que large pour le rectangle */
             margin: 20px;
             background-color: rgba(255, 255, 255, 0.1);
             border: 2px solid #000;
             border-radius: 8px;
             color: #000;
-            font-size: 20px;
+            font-size: 24px; /* Texte plus grand */
             cursor: pointer;
             backdrop-filter: blur(10px);
-            transition: background-color 0.3s, color 0.3s;
+            transition: background-color 0.3s, color 0.3s, transform 0.3s; /* Ajout d'une transition pour l'agrandissement */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -126,6 +126,7 @@
         .subscription-container button:hover {
             background-color: rgba(0, 0, 0, 0.1);
             color: #000;
+            transform: scale(1.1); /* Effet d'agrandissement */
         }
     </style>
 </head>
@@ -134,7 +135,7 @@
         <a href="home.html">Home</a>
         <a href="index.html">Carte</a>
         <a href="calendrier.html">Calendrier</a>
-        <a href="#connexion">Connexion</a>
+        <a href="connexion.html">Enregistrement</a>
         <a href="payment.html">Paiement</a>
     </div>
 

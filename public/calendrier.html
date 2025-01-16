@@ -8,6 +8,8 @@
         body {
             font-family: 'Courier New', Courier, monospace;
             display: flex;
+            margin: 0;
+            height: 100vh;
         }
         #menu {
             width: 200px;
@@ -49,6 +51,11 @@
             font-weight: bold;
             margin-top: 10px;
         }
+        .week-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -56,12 +63,17 @@
         <a href="home.html">Home</a>
         <a href="index.html">Carte</a>
         <a href="calendrier.html">Calendrier</a>
-        <a href="#connexion">Connexion</a>
+        <a href="connexion.html">Enregistrement</a>
         <a href="payment.html">Paiement</a>
     </div>
 
     <div id="content">
         <h1>Calendrier</h1>
+        <div class="week-navigation">
+            <button id="prev-week">Semaine précédente</button>
+            <span id="current-week"></span>
+            <button id="next-week">Semaine suivante</button>
+        </div>
         <form id="event-form">
             <input type="text" id="title" placeholder="Titre" required>
             <input type="date" id="date" required>
@@ -72,11 +84,14 @@
         <table id="events-table">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Titre</th>
-                    <th>Date</th>
                     <th>Heure</th>
-                    <th>Action</th>
+                    <th>Lundi</th>
+                    <th>Mardi</th>
+                    <th>Mercredi</th>
+                    <th>Jeudi</th>
+                    <th>Vendredi</th>
+                    <th>Samedi</th>
+                    <th>Dimanche</th>
                 </tr>
             </thead>
             <tbody>
@@ -86,6 +101,19 @@
     </div>
 
     <script>
+        let currentWeekStart = new Date();
+        currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay() + 1); // Lundi de la semaine actuelle
+
+        document.getElementById('prev-week').addEventListener('click', function() {
+            currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+            loadEvents();
+        });
+
+        document.getElementById('next-week').addEventListener('click', function() {
+            currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+            loadEvents();
+        });
+
         document.getElementById('event-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const title = document.getElementById('title').value;
@@ -116,45 +144,44 @@
         });
 
         function loadEvents() {
+            const weekStart = new Date(currentWeekStart);
+            const weekEnd = new Date(currentWeekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+
+            document.getElementById('current-week').textContent = `Semaine du ${weekStart.toLocaleDateString()} au ${weekEnd.toLocaleDateString()}`;
+
             fetch('/events')
                 .then(response => response.json())
                 .then(events => {
                     const tbody = document.getElementById('events-table').querySelector('tbody');
                     tbody.innerHTML = '';
-                    events.forEach(event => {
+                    const hours = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
+                    const days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+
+                    hours.forEach(hour => {
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>${event.id}</td>
-                            <td>${event.title}</td>
-                            <td>${event.date}</td>
-                            <td>${event.time}</td>
-                            <td><button onclick="deleteEvent(${event.id})">Supprimer</button></td>
-                        `;
+                        tr.innerHTML = `<td>${hour}</td>`;
+                        days.forEach((day, index) => {
+                            const td = document.createElement('td');
+                            const event = events.find(event => {
+                                const eventDate = new Date(event.date);
+                                const eventDay = eventDate.toLocaleDateString('fr-FR', { weekday: 'long' });
+                                const eventTime = event.time.slice(0, 5);
+                                const currentDay = new Date(weekStart);
+                                currentDay.setDate(currentDay.getDate() + index);
+                                return eventDay === day && eventTime === hour && eventDate.toDateString() === currentDay.toDateString();
+                            });
+                            if (event) {
+                                td.textContent = event.title;
+                            }
+                            tr.appendChild(td);
+                        });
                         tbody.appendChild(tr);
                     });
                 })
                 .catch(error => {
                     console.error('Erreur lors du chargement des événements:', error);
                 });
-        }
-
-        function deleteEvent(id) {
-            fetch(`/events/${id}`, {
-                method: 'DELETE'
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erreur lors de la suppression de l\'événement');
-                }
-                return response.text();
-            })
-            .then(data => {
-                alert(data);
-                loadEvents();
-            })
-            .catch(error => {
-                document.getElementById('error-message').textContent = error.message;
-            });
         }
 
         loadEvents();

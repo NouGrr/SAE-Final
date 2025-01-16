@@ -1,19 +1,18 @@
-# Utiliser une image officielle de Node.js comme image de base
 FROM node:16
 
-# Définir le répertoire de travail dans le conteneur
+# Créer le répertoire de travail
 WORKDIR /usr/src/app
 
-# Copier le package.json et package-lock.json pour installer les dépendances
+# Copier les fichiers package.json et package-lock.json
 COPY package*.json ./
 
-# Installer les dépendances de l'application
+# Installer les dépendances
 RUN npm install
 
-# Copier tout le code de l'application dans le conteneur
+# Copier le reste des fichiers de l'application
 COPY . .
 
-# Exposer le port sur lequel ton serveur écoute
+# Exposer le port de l'application
 EXPOSE 3000
 
 # Démarrer l'application

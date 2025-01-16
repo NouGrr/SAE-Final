@@ -8,9 +8,9 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 const db = mysql.createConnection({
-  host: 'db',
-  user: 'user',
-  password: 'password',
+  host: 'mysql',
+  user: 'root',
+  password: 'root',
   database: 'saes5'
 });
 
@@ -34,12 +34,16 @@ app.get('/events', (req, res) => {
 
 app.post('/events', (req, res) => {
   const { title, date, time } = req.body;
+  if (!title || !date || !time) {
+    res.status(400).send('Title, date, and time are required');
+    return;
+  }
   db.query('INSERT INTO calendrier (title, date, time) VALUES (?, ?, ?)', [title, date, time], (err, results) => {
     if (err) {
-      res.status(500).send(err);
+      res.status(500).send('Erreur lors de l\'ajout de l\'événement');
       return;
     }
-    res.status(201).send('Event added');
+    res.status(201).send('Événement ajouté');
   });
 });
 
@@ -50,7 +54,7 @@ app.delete('/events/:id', (req, res) => {
       res.status(500).send(err);
       return;
     }
-    res.send('Event deleted');
+    res.send('Événement supprimé');
   });
 });
 

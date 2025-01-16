@@ -1,39 +1,25 @@
-version: '3.8'
+version: '3.8'  # La version peut varier selon vos besoins, mais '3.8' est une version stable.
 
 services:
-  # Service pour MySQL
-  mysql:
-    image: mysql:5.7
-    container_name: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: root  # Mot de passe root pour MySQL
-      MYSQL_DATABASE: saes5    # Base de données par défaut
+  app:
+    build:
+      context: .  # Le répertoire actuel sera utilisé comme contexte de construction.
+      dockerfile: Dockerfile  # Le nom du fichier Dockerfile, s'il diffère.
     volumes:
-      - mysql_data:/var/lib/mysql    # Volume persistant pour les données MySQL
-    networks:
-      - app-network
+      - .:/usr/src/app  # Monte le répertoire local dans le conteneur pour faciliter les changements en direct.
     ports:
-      - "3306:3306"  # Exposer le port MySQL sur le port 3306 local
-
-  # Service pour phpMyAdmin
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
+      - "3000:3000"  # Redirige le port local 3000 vers le port 3000 du conteneur (modifiez cela si nécessaire).
+    working_dir: /usr/src/app  # Définit le répertoire de travail du conteneur.
+    command: npm start  # Exécute la commande pour démarrer votre application.
     environment:
-      PMA_HOST: mysql  # Nom du service MySQL
-      PMA_PORT: 3306   # Port sur lequel MySQL écoute
+      - NODE_ENV=development  # Définit l'environnement de travail, ajustez selon vos besoins.
+
+  db:
+    image: mysql:5.7  # Remplacez par l'image de votre base de données.
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword  # Définit le mot de passe root pour MySQL.
+      MYSQL_DATABASE: my_database  # Le nom de la base de données par défaut.
     ports:
-      - "8080:80"  # Accéder à phpMyAdmin via localhost:8080
-    depends_on:
-      - mysql
-    networks:
-      - app-network
+      - "3306:3306"  # Redirige le port de la base de données.
 
-# Définir un réseau pour l'application
-networks:
-  app-network:
-    driver: bridge
-
-# Volume pour persister les données MySQL
-volumes:
-  mysql_data:
+# Vous pouvez ajouter d'autres services ici si nécessaire.

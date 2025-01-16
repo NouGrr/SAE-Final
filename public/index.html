@@ -33,86 +33,71 @@
         #menu a:hover {
             background-color: #000000;
         }
-        #map-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
         #map {
             flex: 1;
         }
     </style>
+    <!-- Import Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <!-- Import Leaflet Routing Machine JavaScript -->
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 </head>
 <body>
     <div id="menu">
         <a href="home.html">Home</a>
         <a href="index.html">Carte</a>
         <a href="calendrier.html">Calendrier</a>
-        <a href="#connexion">Connexion</a>
+        <a href="connexion.html">Enregistrement</a>
         <a href="payment.html">Paiement</a>
     </div>
-
-    <div id="map-container">
-        <div id="map"></div>
-    </div>
-
-    <!-- Import Leaflet JS -->
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <!-- Import Leaflet Routing Machine -->
-    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
-    <!-- Import Leaflet Control Geocoder -->
-    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-
+    <div id="map"></div>
     <script>
-        // Initialisation de la carte
-        const map = L.map('map').setView([48.8566, 2.3522], 13); // Centré sur Paris par défaut
+        // Initialiser la carte
+        var map = L.map('map').setView([48.17107132428695, 6.455684584780658], 13); // Coordonnées d'Epinal
 
-        // Ajout d'une couche de tuiles OpenStreetMap
+        // Ajouter une couche de tuiles OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Fonction pour centrer la carte sur la position actuelle de l'utilisateur
-        function onLocationFound(e) {
-            map.setView(e.latlng, 13);
-        }
+        // Ajouter des points de départ, d'étape et d'arrivée
+        var startPoint = L.latLng(48.160511587709834, 6.4495893713059225); // Église Saint-Antoine
+        var waypoint1 = L.latLng(48.18213533367059, 6.433577416817989); // Ligue de l’enseignement - 15, rue Général de Reffye
+        var waypoint2 = L.latLng(48.138744524416865, 6.474757880581837); // APF - Local extérieur – ESAT – Rue de la papeterie à Dinozé
+        var waypoint3 = L.latLng(48.1937858511398, 6.461067547503791); // Centre Léo Lagrange
+        var waypoint4 = L.latLng(48.19353874759045, 6.442590976886204); // Ecodenn’ergie - 36, bis rue de la Plaine 
+        var endPoint = L.latLng(48.18930960788674, 6.4703860419551145); // Botanic - Avenue des Terres St Jean
 
-        function onLocationError(e) {
-            alert(e.message);
-        }
+        // Ajouter des marqueurs pour les points de départ, d'étape et d'arrivée
+        L.marker(startPoint).addTo(map).bindPopup('Départ');
+        L.marker(waypoint1).addTo(map).bindPopup('Étape');
+        L.marker(waypoint2).addTo(map).bindPopup('Étape');
+        L.marker(waypoint3).addTo(map).bindPopup('Étape');
+        L.marker(waypoint4).addTo(map).bindPopup('Étape');
+        L.marker(endPoint).addTo(map).bindPopup('Arrivée');
 
-        map.on('locationfound', onLocationFound);
-        map.on('locationerror', onLocationError);
-
-        map.locate({ setView: true, maxZoom: 16 });
-
-        // Initialisation du contrôle de routage
-        const control = L.Routing.control({
-            waypoints: [],
+        // Ajouter un itinéraire entre les points
+        L.Routing.control({
+            waypoints: [startPoint, waypoint1, waypoint2, waypoint3, waypoint4, endPoint],
             routeWhileDragging: true,
             geocoder: L.Control.Geocoder.nominatim(),
-            lineOptions: {
-                styles: [{ color: 'blue', opacity: 1, weight: 5 }]
-            }
+            router: L.Routing.mapbox('pk.eyJ1IjoiZXhhbXBsZXVzZXIiLCJhIjoiY2p1a3pndHltMWFpaDJzbWNndGVjZXRhZCJ9.qEoZOriXZKfYPb8xyyzFBQ'),
+            createMarker: function() { return null; },  // Ne pas créer de marqueurs supplémentaires
+            showAlternatives: true
         }).addTo(map);
 
-        // Ajouter des points de passage en cliquant sur la carte
-        map.on('click', function(e) {
-            const waypoint = L.latLng(e.latlng.lat, e.latlng.lng);
-            control.spliceWaypoints(control.getWaypoints().length, 0, waypoint);
+        // Forcer le calcul de l'itinéraire au chargement de la carte
+        control.getRouter().on('routesfound', function(e) {
+            var routes = e.routes;
+            if (routes.length) {
+                control.setWaypoints([startPoint, waypoint1, waypoint2, waypoint3, waypoint4, endPoint]); // Rafraîchir l'itinéraire
+            }
         });
 
-        // Ajouter un gestionnaire d'événements pour supprimer les points de passage
-        control.on('waypointschanged', function(e) {
-            e.waypoints.forEach(function(waypoint, index) {
-                if (waypoint.latLng) {
-                    const marker = waypoint.marker;
-                    marker.on('click', function() {
-                        control.spliceWaypoints(index, 1);
-                    });
-                }
-            });
+        // Si une erreur se produit
+        control.getRouter().on('routeerror', function(e) {
+            alert('Erreur de génération d\'itinéraire. Vérifie ta clé API et les points sélectionnés.');
         });
     </script>
 </body>

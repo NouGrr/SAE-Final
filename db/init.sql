@@ -4,3 +4,6 @@ CREATE TABLE IF NOT EXISTS calendrier (
   date DATE NOT NULL,
   time TIME NOT NULL
 );
+
+-- Exemple d'insertion de données
+INSERT INTO calendrier (title, date, time) VALUES ('Test', '2025-01-18', '14:00:00');
