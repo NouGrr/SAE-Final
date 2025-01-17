@@ -9,28 +9,22 @@ on:
       - master
 
 jobs:
-  # Job de build et de test
   build-and-test:
-    runs-on: ubuntu-latest  # Vous pouvez choisir un autre environnement si nécessaire
-
+    runs-on: ubuntu-latest
     steps:
-    # 1. Vérifier le code
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    # 2. Installer Node.js
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'  # Choisissez la version de Node.js que vous utilisez
-
-    # 3. Installer les dépendances
-    - name: Install dependencies
-      run: npm install
-
-    # 4. Exécuter les tests
-    - name: Run tests
-      run: npm test
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Install dependencies
+        run: |
+          npm install
+          npm install @testing-library/jest-dom --save-dev
+          npm install @babel/plugin-proposal-private-property-in-object --save-dev
+      - name: Run tests
+        run: npm test
 
   # Job de déploiement
   deploy:
