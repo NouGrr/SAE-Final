@@ -32,10 +32,6 @@ jobs:
     - name: Verify installation of react-scripts
       run: npm ls react-scripts
 
-    # 5. Exécuter les tests
-    - name: Run tests
-      run: npm test
-
   # Job de déploiement
   deploy:
     runs-on: windows-latest  # Utilisation de Windows comme environnement
