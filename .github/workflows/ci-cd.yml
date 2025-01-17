@@ -52,7 +52,7 @@ jobs:
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
-        github_token: ${{ secrets.GH_TOKEN }}  # Clé SSH privée pour déploiement
+        github_token: ${{ secrets.G_TOKEN }}  # Clé SSH privée pour déploiement
         publish_branch: gh-pages               # Branche de déploiement
         publish_dir: build                     # Dossier à déployer (par exemple 'build' ou 'dist')
         user_name: "GitHub Actions"            # Nom d'utilisateur pour le commit
