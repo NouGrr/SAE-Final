@@ -3,7 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - master   # Ou la branche que vous souhaitez suivre
+      - master
   pull_request:
     branches:
       - master
@@ -11,47 +11,37 @@ on:
 jobs:
   # Job de build et de test
   build-and-test:
-    runs-on: ubuntu-latest  # Vous pouvez choisir un autre environnement si nécessaire
+    runs-on: ubuntu-latest
 
     steps:
-    # 1. Vérifier le code
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # 2. Installer Node.js
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '14'  # Choisissez la version de Node.js que vous utilisez
+        node-version: '18'
 
-    # 3. Installer les dépendances
     - name: Install dependencies
-      run: |
-        npm install
-        npm install @testing-library/react --save-dev
-        npm install @testing-library/jest-dom --save-dev
-        npm install @testing-library/dom --save-dev
+      run: npm install
 
-    # 4. Exécuter les tests
     - name: Run tests
       run: npm test
 
-  # Job de déploiement
   deploy:
     runs-on: ubuntu-latest
-
-    needs: build-and-test   # Ce job dépend du job build-and-test
+    needs: build-and-test
 
     steps:
-    # 1. Vérifier le code
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # 2. (Optionnel) Déployer votre application
-    # Exemple de déploiement sur GitHub Pages
+    - name: Build project
+      run: npm run build
+
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
-        deploy_key: ${{ secrets.DEPLOY_KEY }}   # Clé SSH privée pour déploiement
-        branch: gh-pages    # Branche de déploiement
-        folder: dist        # Dossier à déployer (par exemple 'dist' ou 'build')
+        deploy_key: ${{ secrets.DEPLOY_KEY }}
+        branch: gh-pages
+        folder: build
