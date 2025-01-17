@@ -48,7 +48,7 @@ jobs:
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
-        deploy_key: ${{ secrets.DEPLOY_KEY }}   # Clé SSH privée pour déploiement
-        branch: gh-pages    # Branche de déploiement
-        folder: dist        # Dossier à déployer (par exemple 'dist' ou 'build')
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_branch: gh-pages  # Branche de déploiement
+        publish_dir: build        # Dossier à déployer (généré par npm run build)
 
