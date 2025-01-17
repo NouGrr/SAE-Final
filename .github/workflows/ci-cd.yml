@@ -11,7 +11,7 @@ on:
 jobs:
   # Job de build et de test
   build-and-test:
-    runs-on: ubuntu-latest  # Vous pouvez choisir un autre environnement si nécessaire
+    runs-on: windows-latest  # Vous pouvez choisir un autre environnement si nécessaire
 
     steps:
     # 1. Vérifier le code
@@ -24,24 +24,15 @@ jobs:
       with:
         node-version: '14'  # Choisissez la version de Node.js que vous utilisez
 
-    # 3. Cacher les dépendances npm pour accélérer les builds futurs
-    - name: Cache npm dependencies
-      uses: actions/cache@v2
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-modules-
-
-    # 4. Installer les dépendances avec legacy-peer-deps
+    # 3. Installer les dépendances avec legacy-peer-deps
     - name: Install dependencies with legacy-peer-deps
       run: npm install --legacy-peer-deps
 
-    # 5. Vérifier l'installation de react-scripts
+    # 4. Vérifier l'installation de react-scripts
     - name: Verify installation of react-scripts
       run: npm ls react-scripts
 
-    # 6. Exécuter les tests
+    # 5. Exécuter les tests
     - name: Run tests
       run: npm test
 
