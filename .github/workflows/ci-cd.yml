@@ -46,9 +46,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # 2. Créer le build
-    - name: Build the project
-      run: npm run build
+  
 
     # 3. Déployer votre application
     - name: Deploy to GitHub Pages
