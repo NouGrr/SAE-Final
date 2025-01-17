@@ -24,21 +24,30 @@ jobs:
       with:
         node-version: '14'  # Choisissez la version de Node.js que vous utilisez
 
-    # 3. Installer les dépendances
-    - name: Install dependencies
+    # 3. Cacher les dépendances npm pour accélérer les builds futurs
+    - name: Cache npm dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-modules-
+
+    # 4. Installer les dépendances avec legacy-peer-deps
+    - name: Install dependencies with legacy-peer-deps
       run: npm install --legacy-peer-deps
 
+    # 5. Vérifier l'installation de react-scripts
+    - name: Verify installation of react-scripts
+      run: npm ls react-scripts
 
-    # 4. Exécuter les tests
+    # 6. Exécuter les tests
     - name: Run tests
       run: npm test
-
-    
 
   # Job de déploiement
   deploy:
     runs-on: ubuntu-latest
-
     needs: build-and-test   # Ce job dépend du job build-and-test
 
     steps:
@@ -46,18 +55,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Build project
+    # 2. Créer le build
+    - name: Build the project
       run: npm run build
 
-    - name: Setup GitHub URL
-      run: git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-
-    # 2. (Optionnel) Déployer votre application
-    # Exemple de déploiement sur GitHub Pages
+    # 3. Déployer votre application
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_branch: gh-pages  # Branche de déploiement
-        publish_dir: build        # Dossier à déployer (généré par npm run build)
-
+        deploy_key: ${{ secrets.DEPLOY_KEY }}   # Clé SSH privée pour déploiement
+        branch: gh-pages    # Branche de déploiement
+        folder: build       # Dossier à déployer (par exemple 'build' ou 'dist')
