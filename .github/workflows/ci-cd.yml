@@ -11,7 +11,7 @@ on:
 jobs:
   # Job de build et de test
   build-and-test:
-    runs-on: windows-latest  # Vous pouvez choisir un autre environnement si nécessaire
+    runs-on: windows-latest  # Utilisation de Windows comme environnement
 
     steps:
     # 1. Vérifier le code
@@ -38,7 +38,7 @@ jobs:
 
   # Job de déploiement
   deploy:
-    runs-on: windows-latest  # Vous pouvez choisir un autre environnement si nécessaire
+    runs-on: windows-latest  # Utilisation de Windows comme environnement
     needs: build-and-test   # Ce job dépend du job build-and-test
 
     steps:
@@ -47,13 +47,15 @@ jobs:
       uses: actions/checkout@v2
 
     # 2. Créer le build
-    #- name: Build the project
-     # run: npm run build
+    - name: Build the project
+      run: npm run build
 
     # 3. Déployer votre application
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
-        deploy_key: ${{ secrets.DEPLOY_KEY }}   # Clé SSH privée pour déploiement
-        branch: gh-pages    # Branche de déploiement
-        folder: build       # Dossier à déployer (par exemple 'build' ou 'dist')
+        deploy_key: ${{ secrets.DEPLOY_KEY }}  # Clé SSH privée pour déploiement
+        publish_branch: gh-pages               # Branche de déploiement
+        publish_dir: build                     # Dossier à déployer (par exemple 'build' ou 'dist')
+        user_name: "GitHub Actions"            # Nom d'utilisateur pour le commit
+        user_email: "actions@github.com"       # Email pour le commit
