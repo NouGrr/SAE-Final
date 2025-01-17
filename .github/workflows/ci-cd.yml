@@ -9,22 +9,18 @@ on:
       - master
 
 jobs:
-  # Job de build et de test
   build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Vérifier le code
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # 2. Configurer Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '18'
 
-      # 3. Cache des modules Node.js
       - name: Cache Node.js modules
         uses: actions/cache@v3
         with:
@@ -33,29 +29,23 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      # 4. Installer les dépendances
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
-      # 5. Exécuter les tests
       - name: Run tests
         run: npm test
 
-  # Job de déploiement
   deploy:
     runs-on: ubuntu-latest
     needs: build-and-test
 
     steps:
-      # 1. Vérifier le code
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # 2. Construire le projet
       - name: Build project
         run: npm run build
 
-      # 3. Déployer sur GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
