@@ -3,10 +3,10 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main   # Ou la branche que vous souhaitez suivre
+      - master   # Ou la branche que vous souhaitez suivre
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   # Job de build et de test

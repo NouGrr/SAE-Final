@@ -80,11 +80,11 @@
         // Ajouter un itinéraire entre les points
         L.Routing.control({
             waypoints: [startPoint, waypoint1, waypoint2, waypoint3, waypoint4, endPoint],
-            routeWhileDragging: true,
+            routeWhileDragging: false,
             geocoder: L.Control.Geocoder.nominatim(),
-            router: L.Routing.mapbox('pk.eyJ1IjoiZXhhbXBsZXVzZXIiLCJhIjoiY2p1a3pndHltMWFpaDJzbWNndGVjZXRhZCJ9.qEoZOriXZKfYPb8xyyzFBQ'),
             createMarker: function() { return null; },  // Ne pas créer de marqueurs supplémentaires
-            showAlternatives: true
+            showAlternatives: false,
+            show : false
         }).addTo(map);
 
         // Forcer le calcul de l'itinéraire au chargement de la carte
