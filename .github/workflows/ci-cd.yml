@@ -30,6 +30,7 @@ jobs:
         npm install
         npm install @testing-library/react --save-dev
         npm install @testing-library/jest-dom --save-dev
+        npm install @testing-library/dom --save-dev
 
     # 4. Exécuter les tests
     - name: Run tests
