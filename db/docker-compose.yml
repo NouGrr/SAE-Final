@@ -1,25 +1,19 @@
-version: '3.8'  # La version peut varier selon vos besoins, mais '3.8' est une version stable.
-
+version: '3'
 services:
-  app:
-    build:
-      context: .  # Le répertoire actuel sera utilisé comme contexte de construction.
-      dockerfile: Dockerfile  # Le nom du fichier Dockerfile, s'il diffère.
-    volumes:
-      - .:/usr/src/app  # Monte le répertoire local dans le conteneur pour faciliter les changements en direct.
-    ports:
-      - "3000:3000"  # Redirige le port local 3000 vers le port 3000 du conteneur (modifiez cela si nécessaire).
-    working_dir: /usr/src/app  # Définit le répertoire de travail du conteneur.
-    command: npm start  # Exécute la commande pour démarrer votre application.
+  mysql:
+    image: mysql:5.7
     environment:
-      - NODE_ENV=development  # Définit l'environnement de travail, ajustez selon vos besoins.
-
-  db:
-    image: mysql:5.7  # Remplacez par l'image de votre base de données.
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword  # Définit le mot de passe root pour MySQL.
-      MYSQL_DATABASE: my_database  # Le nom de la base de données par défaut.
+      MYSQL_ROOT_PASSWORD: example
     ports:
-      - "3306:3306"  # Redirige le port de la base de données.
+      - "3306:3306"
 
-# Vous pouvez ajouter d'autres services ici si nécessaire.
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
