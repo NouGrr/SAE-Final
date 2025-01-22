@@ -6,7 +6,7 @@
     <title>Page de Paiement</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Courier New', Courier, monospace;
             background-color: #f4f4f4;
             display: flex;
             justify-content: center;
@@ -16,29 +16,35 @@
         }
         #menu {
             width: 200px;
-            background-color: #000000;
+            background-color: #000;
             padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
             display: flex;
             flex-direction: column;
-            position: absolute;
-            left: 0;
+            position: fixed;
+            height: 100%;
             top: 0;
-            bottom: 0;
+            left: 0;
+            z-index: 100;
         }
+
         #menu a {
             display: block;
             text-decoration: none;
-            color: #fffcfc;
+            color: #ecf0f1;
             padding: 10px 15px;
             margin: 10px 0;
             border-radius: 5px;
-            transition: background-color 0.3s;
-            font-family: 'Courier New', Courier, monospace;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
+
         #menu a:hover {
-            background-color: #000000;
+            background-color: #444;
+            color: #ecf0f1;
+            transform: translateX(10px); /* Déplacement au survol */
         }
+
         .payment-container {
             background-color: #fff;
             padding: 20px;
@@ -76,7 +82,7 @@
         .form-group button {
             width: 100%;
             padding: 10px;
-            background-color: #28a745;
+            background-color: #333;
             border: none;
             border-radius: 4px;
             color: #fff;
@@ -85,7 +91,7 @@
             transition: background-color 0.3s;
         }
         .form-group button:hover {
-            background-color: #218838;
+            background-color: #000;
         }
         .subscription-container {
             display: flex;

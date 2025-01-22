@@ -42,9 +42,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-  
 
-    # 3. Déployer votre application
+
+    # 2. Déployer votre application
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,14 +22,17 @@
         #menu a {
             display: block;
             text-decoration: none;
-            color: #fffcfc;
+            color: #ecf0f1;
             padding: 10px 15px;
             margin: 10px 0;
             border-radius: 5px;
-            transition: background-color 0.3s;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
         #menu a:hover {
-            background-color: #000000;
+            background-color: #444;
+            color: #ecf0f1;
+            transform: translateX(10px);            
         }
         #content {
             flex: 1;
@@ -102,7 +105,7 @@
 
     <script>
         let currentWeekStart = new Date();
-        currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay() + 1); // Lundi de la semaine actuelle
+        currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay() + 1);
 
         document.getElementById('prev-week').addEventListener('click', function() {
             currentWeekStart.setDate(currentWeekStart.getDate() - 7);
@@ -120,27 +123,25 @@
             const date = document.getElementById('date').value;
             const time = document.getElementById('time').value;
 
+            console.log('Données envoyées :', { title, date, time }); // Debug
+
             fetch('/events', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, date, time })
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erreur lors de l\'ajout de l\'événement');
-                }
-                return response.text();
-            })
-            .then(data => {
-                alert(data);
-                loadEvents();
-                document.getElementById('error-message').textContent = '';
-            })
-            .catch(error => {
-                document.getElementById('error-message').textContent = error.message;
-            });
+                .then(response => {
+                    if (!response.ok) throw new Error('Erreur lors de l\'ajout de l\'événement');
+                    return response.text();
+                })
+                .then(data => {
+                    alert(data);
+                    loadEvents();
+                    document.getElementById('error-message').textContent = '';
+                })
+                .catch(error => {
+                    document.getElementById('error-message').textContent = error.message;
+                });
         });
 
         function loadEvents() {

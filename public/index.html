@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carte avec itinéraire</title>
+    <title>Carte intéractive avec itinéraire de points</title>
     <!-- Import Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
     <style>
@@ -11,6 +11,7 @@
             display: flex;
             margin: 0;
             height: 100vh;
+            font-family: 'Courier New', Courier, monospace;
         }
         #menu {
             width: 200px;
@@ -24,15 +25,17 @@
         #menu a {
             display: block;
             text-decoration: none;
-            color: #fffcfc;
+            color: #ecf0f1;
             padding: 10px 15px;
             margin: 10px 0;
             border-radius: 5px;
-            transition: background-color 0.3s;
-            font-family: 'Courier New', Courier, monospace;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
         #menu a:hover {
-            background-color: #000000;
+            background-color: #444;
+            color: #ecf0f1;
+            transform: translateX(10px);
         }
         #map {
             flex: 1;
@@ -49,7 +52,7 @@
 </head>
 <body>
     <div id="menu">
-        <a href="home.html">Home</a>
+        <a href="home.html" aria-label="Retour">Home</a>
         <a href="index.html">Carte</a>
         <a href="calendrier.html">Calendrier</a>
         <a href="connexion.html">Enregistrement</a>
@@ -74,7 +77,7 @@
         var endPoint = L.latLng(48.18930960788674, 6.4703860419551145); // Botanic - Avenue des Terres St Jean
 
         // Ajouter des marqueurs pour les points de départ, d'étape et d'arrivée
-        L.marker(startPoint).addTo(map).bindPopup('Départ');
+        L.marker(startPoint).addTo(map).bindPopup('Départ - Eglise saitnt Antoine');
         L.marker(waypoint1).addTo(map).bindPopup('Étape');
         L.marker(waypoint2).addTo(map).bindPopup('Étape');
         L.marker(waypoint3).addTo(map).bindPopup('Étape');
@@ -103,7 +106,7 @@
 
         // Si une erreur se produit
         control.getRouter().on('routeerror', function(e) {
-            alert('Erreur de génération d\'itinéraire. Vérifie ta clé API et les points sélectionnés.');
+            alert('Erreur de génération d\'itinéraire. Vérifie ta clé API et les points sélectionnés. Soucis important');
         });
     </script>
     <div id="root"></div>
